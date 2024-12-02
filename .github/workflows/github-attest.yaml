@@ -22,13 +22,13 @@ jobs:
       - uses: actions/attest-build-provenance@v1
         id: attest
         with:
-          subject-path: 'aenguerrand-examplepackage12-0.3.0.tgz'
-          subject-name: 'pkg:npm/%40aenguerrand/examplepackage12@0.3.0'
+          subject-path: 'aenguerrand-examplepackage12-0.4.0.tgz'
+          subject-name: 'pkg:npm/%40aenguerrand/examplepackage12@0.4.0'
       - name: Upload artifact (build)
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
         with:
-          name: aenguerrand-examplepackage12-0.3.0.tgz
-          path: aenguerrand-examplepackage12-0.3.0.tgz
+          name: aenguerrand-examplepackage12-0.4.0.tgz
+          path: aenguerrand-examplepackage12-0.4.0.tgz
       - name: Upload artifact (build)
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
         with:
@@ -37,4 +37,4 @@ jobs:
       - name: Upload to npmjs.com
         run: |
           npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
-          npm publish aenguerrand-examplepackage12-0.3.0.tgz --access public --provenance-file ${{ steps.attest.outputs.bundle-path }} --access public
+          npm publish aenguerrand-examplepackage12-0.4.0.tgz --access public --provenance-file ${{ steps.attest.outputs.bundle-path }} --access public

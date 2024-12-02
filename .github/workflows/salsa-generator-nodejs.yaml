@@ -39,12 +39,12 @@ jobs:
           path: attestations
           sha256: ${{ needs.build.outputs.provenance-download-sha256 }}
       - run: ls -Rla
-      - name: Upload to npmjs.com
-        env:
-          TARBALL_PATH: "${{ needs.build.outputs.package-name }}"
-          PROVENANCE_PATH: "./attestations/${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.provenance-name }}"
-        run: |
-          npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
-          npm publish "${TARBALL_PATH}" --access public --provenance-file="${PROVENANCE_PATH}"
+      # - name: Upload to npmjs.com
+      #   env:
+      #     TARBALL_PATH: "${{ needs.build.outputs.package-name }}"
+      #     PROVENANCE_PATH: "./attestations/${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.provenance-name }}"
+      #   run: |
+      #     npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
+      #     npm publish "${TARBALL_PATH}" --access public --provenance-file="${PROVENANCE_PATH}"
 
     
