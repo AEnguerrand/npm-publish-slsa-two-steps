@@ -7,6 +7,10 @@
       "build": "npm pack && mkdir -p dist && mv *.tgz dist/",
       "test": "echo 'Running tests...'"
     },
-    "license": "MIT"
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/AEnguerrand/npm-publish-slsa-two-steps"
+    }
   }
   
