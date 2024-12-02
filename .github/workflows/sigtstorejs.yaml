@@ -25,6 +25,11 @@ jobs:
         run: npx @sigstore/cli attest ./provenance-statement.json -o provenance.sigstore.json
       - name: "Verify provenance statement (TODO: Verify source identity)"
         run: npx @sigstore/cli verify provenance.sigstore.json
+      - name: Upload artifact (provenance statement)
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        with:
+          name: provenance-statement.json
+          path: provenance-statement.json
       - name: Upload artifact (provenance)
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
         with:
@@ -41,6 +46,8 @@ jobs:
         run: |
           ls -la
           cat provenance.sigstore.json
+          echo "----"
+          cat provenance-statement.json
       - name: Upload to npmjs.com
         run: |
           npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
