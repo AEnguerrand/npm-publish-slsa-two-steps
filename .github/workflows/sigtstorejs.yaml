@@ -22,7 +22,7 @@ jobs:
       - name: Generate provenance statement with package as attestation subject
         run: |
           sha512=$(shasum -a 512 aenguerrand-examplepackage12-0.4.0.tgz | awk '{print $1}')
-          npx @npmcli/provenance-cli generate aenguerrand-examplepackage12-0.4.0.tgz -o provenance-statement.json --subject-name="pkg:npm/%40aenguerrand/examplepackage12@0.4.0" --subject-digest="$sha512"
+          npx @npmcli/provenance-cli generate -o provenance-statement.json --subject-name="pkg:npm/%40aenguerrand/examplepackage12@0.4.0" --subject-digest="$sha512"
       - name: Sign provenance statement
         run: npx @sigstore/cli attest ./provenance-statement.json -o provenance.sigstore.json
       - name: "Verify provenance statement (TODO: Verify source identity)"
