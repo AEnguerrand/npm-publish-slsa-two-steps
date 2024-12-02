@@ -1,0 +1,50 @@
+name: SLSA Generator NodeJS
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    permissions:
+      id-token: write # For signing
+      contents: read # For repo checkout.
+      actions: read # For getting workflow run info.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@v2.0.0
+    with:
+      run-scripts: "build"
+      rekor-log-public: true
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download tarball
+        uses: slsa-framework/slsa-github-generator/actions/nodejs/secure-package-download@v2.0.0
+        with:
+          name: ${{ needs.build.outputs.package-download-name }}
+          path: ${{ needs.build.outputs.package-name }}
+          sha256: ${{ needs.build.outputs.package-download-sha256 }}
+      - run: ls -Rla
+      - run: echo ${{ needs.build.outputs.provenance-download-name }}
+      - run: echo ${{ needs.build.outputs.provenance-name }}
+      - name: Download provenance
+        uses: slsa-framework/slsa-github-generator/actions/nodejs/secure-attestations-download@v2.0.0
+        with:
+          name: ${{ needs.build.outputs.provenance-download-name }}
+          path: attestations
+          sha256: ${{ needs.build.outputs.provenance-download-sha256 }}
+      - run: ls -Rla
+      - name: Upload to npmjs.com
+        env:
+          TARBALL_PATH: "${{ needs.build.outputs.package-name }}"
+          PROVENANCE_PATH: "./attestations/${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.provenance-name }}"
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
+          npm publish "${TARBALL_PATH}" --access public --provenance-file="${PROVENANCE_PATH}"
+
+    

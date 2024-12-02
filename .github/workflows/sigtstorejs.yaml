@@ -1,0 +1,47 @@
+name: SigStoreJS
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4
+      - name: Generate dummy package
+        run: npm pack
+      - name: Generate provenance statement with package as attestation subject
+        run: npx @npmcli/provenance-cli generate aenguerrand-examplepackage12-0.2.0.tgz -o provenance-statement.json --subject-name="pkg:npm/%40aenguerrand/examplepackage12@0.2.0"
+      - name: Sign provenance statement
+        run: npx @sigstore/cli attest ./provenance-statement.json -o provenance.sigstore.json
+      - name: "Verify provenance statement (TODO: Verify source identity)"
+        run: npx @sigstore/cli verify provenance.sigstore.json
+      - name: Upload artifact (provenance)
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        with:
+          name: provenance-sigstore.json
+          path: provenance.sigstore.json
+      - name: Upload artifact (build)
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        with:
+          name: aenguerrand-examplepackage12-0.2.0.tgz
+          path: aenguerrand-examplepackage12-0.2.0.tgz
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.7.0
+      - name: debug
+        run: |
+          ls -la
+          cat provenance.sigstore.json
+      - name: Upload to npmjs.com
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
+          npm publish aenguerrand-examplepackage12-0.2.0.tgz --access public --provenance-file provenance.sigstore.json --access public
