@@ -20,14 +20,31 @@ jobs:
         run: |
           echo "Building the project"
           npm pack
-      - run: ls -la
+      - name: Auto-Detect - Package details
+        id: package-details
+        run: |
+          PACKAGE_PATH=$(ls -1 *.tgz | head -n 1) # To be change with the action as input
+          PACKAGE_TGZ=$(basename $PACKAGE_PATH)
+          PACKAGE_NAME=$(jq -r '.name' package.json)
+          PACKAGE_VERSION=$(jq -r '.version' package.json)
+          PACKAGE_INTEGRITY=$(shasum -a 512 $PACKAGE_PATH | awk '{print $1}')
+          echo "PACKAGE_TGZ=${PACKAGE_TGZ}" >> $GITHUB_OUTPUT
+          echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+          echo "PACKAGE_INTEGRITY=${PACKAGE_INTEGRITY}" >> $GITHUB_OUTPUT
+      - name: Print all outputs of packges details
+        run: |
+          echo "PACKAGE_TGZ=${{ steps.package-details.outputs.PACKAGE_TGZ }}"
+          echo "PACKAGE_NAME=${{ steps.package-details.outputs.PACKAGE_NAME }}"
+          echo "PACKAGE_VERSION=${{ steps.package-details.outputs.PACKAGE_VERSION }}"
+          echo "PACKAGE_INTEGRITY=${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}"
       - name: Generate the SLSA layout
         env:
           SLSA_LAYOUT_FILE: artifacts-layout.json
-          PACKAGE_NAME: aenguerrand-examplepackage12
-          PACKAGE_VERSION: 0.4.0
-          PACKAGE_INTEGRITY: sha256
-          PACKAGE_FILENAME: aenguerrand-examplepackage12-0.4.0.tgz
+          PACKAGE_NAME: ${{ steps.package-details.outputs.PACKAGE_NAME }}
+          PACKAGE_VERSION: ${{ steps.package-details.outputs.PACKAGE_VERSION }}
+          PACKAGE_INTEGRITY: ${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}
+          PACKAGE_FILENAME: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
         run: |
           bash ./.github/workflows/slsa-github-generator-nodejs-layout.sh
       - name: Generate the attestation
