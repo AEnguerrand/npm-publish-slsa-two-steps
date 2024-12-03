@@ -20,7 +20,14 @@ jobs:
         run: |
           echo "Building the project"
           npm pack
+      - run: ls -la
       - name: Generate the SLSA layout
+        env:
+          SLSA_LAYOUT_FILE: artifacts-layout.json
+          PACKAGE_NAME: aenguerrand-examplepackage12
+          PACKAGE_VERSION: 0.4.0
+          PACKAGE_INTEGRITY: sha256
+          PACKAGE_FILENAME: aenguerrand-examplepackage12-0.4.0.tgz
         run: |
           bash ./.github/workflows/slsa-github-generator-nodejs-layout.sh
       - name: Generate the attestation
