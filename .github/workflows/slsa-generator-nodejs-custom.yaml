@@ -31,7 +31,7 @@ jobs:
           echo "PACKAGE_TGZ=${PACKAGE_TGZ}" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
-          echo "PACKAGE_INTEGRITY=${PACKAGE_INTEGRITY}" >> $GITHUB_OUTPUT
+          echo "PACKAGE_INTEGRITY=sha512-${PACKAGE_INTEGRITY}" >> $GITHUB_OUTPUT
       - name: Print all outputs of packges details
         run: |
           echo "PACKAGE_TGZ=${{ steps.package-details.outputs.PACKAGE_TGZ }}"
@@ -40,7 +40,7 @@ jobs:
           echo "PACKAGE_INTEGRITY=${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}"
       - name: Generate the SLSA layout
         env:
-          SLSA_LAYOUT_FILE: artifacts-layout.json
+          SLSA_OUTPUTS_ARTIFACTS_FILE: artifacts-layout.json
           PACKAGE_NAME: ${{ steps.package-details.outputs.PACKAGE_NAME }}
           PACKAGE_VERSION: ${{ steps.package-details.outputs.PACKAGE_VERSION }}
           PACKAGE_INTEGRITY: ${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}
