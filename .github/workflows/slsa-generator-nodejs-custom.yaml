@@ -1,0 +1,42 @@
+name: SLSA Generator NodeJS
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4
+      - name: Build steps
+        run: |
+          echo "Building the project"
+          npm pack
+      - name: Generate the SLSA layout
+        run: |
+          bash ./slsa-github-generator-nodejs-layout.sh
+      - name: Generate the attestation
+        uses: slsa-framework/slsa-github-generator/.github/actions/generate-attestations@v2.0.0
+        with:
+          slsa-layout-file: artifacts-layout.json
+          predicate-type: https://slsa.dev/provenance/v0.2
+          predicate-file: predicate.json
+          output-folder: attestations-unsigned
+      - name: Sign the attestation
+        uses: slsa-framework/slsa-github-generator/.github/actions/sign-attestations@v2.0.0
+        with:
+          payload-type: application/vnd.in-toto+json
+          attestations: attestations-unsigned
+          output-folder: attestations-signed          
+
+      
+
+    
