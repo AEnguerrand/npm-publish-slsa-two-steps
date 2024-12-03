@@ -42,16 +42,16 @@ jobs:
         id: generate
         uses: slsa-framework/slsa-github-generator/actions/delegator/setup-generic@v2.0.0
         with:
-          slsa-workflow-recipient: "delegator_lowperms-generic_slsa3.yml"
+          slsa-workflow-recipient: "delegator_generic_slsa3.yml"
           slsa-rekor-log-public: true #To be changed when in action package
           slsa-runner-label: "ubuntu-latest"
-          slsa-build-action-path: "./test"
+          slsa-build-action-path: "./internal/callback_action"
           slsa-version: "v0.2"
           slsa-workflow-inputs: ${{ toJson(inputs) }}
       - name: Generate the predicate (Verify token)
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@v2.0.0
         with:
-          slsa-workflow-recipient: "delegator_lowperms-generic_slsa3.yml"
+          slsa-workflow-recipient: "delegator_generic_slsa3.yml"
           slsa-unverified-token: ${{ steps.generate.outputs.slsa-token }}
           output-predicate: predicate.json
           builder-interface-type: "builder"
