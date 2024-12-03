@@ -38,6 +38,23 @@ jobs:
           echo "PACKAGE_NAME=${{ steps.package-details.outputs.PACKAGE_NAME }}"
           echo "PACKAGE_VERSION=${{ steps.package-details.outputs.PACKAGE_VERSION }}"
           echo "PACKAGE_INTEGRITY=${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}"
+      - name: Generate the predicate (Generate a token)
+        id: generate
+        uses: slsa-framework/slsa-github-generator/actions/delegator/setup-generic@v2.0.0
+        with:
+          slsa-workflow-recipient: "delegator_lowperms-generic_slsa3.yml"
+          slsa-rekor-log-public: true #To be changed when in action package
+          slsa-runner-label: "ubuntu-latest"
+          slsa-build-action-path: "./test"
+          slsa-version: "v0.2"
+          slsa-workflow-inputs: ${{ toJson(inputs) }}
+      - name: Generate the predicate (Verify token)
+        uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@v2.0.0
+        with:
+          slsa-workflow-recipient: "delegator_lowperms-generic_slsa3.yml"
+          slsa-unverified-token: ${{ steps.generate.outputs.slsa-token }}
+          output-predicate: predicate.json
+          builder-interface-type: "builder"
       - name: Generate the SLSA layout
         env:
           SLSA_OUTPUTS_ARTIFACTS_FILE: artifacts-layout.json
