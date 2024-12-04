@@ -75,16 +75,16 @@ jobs:
       - name: Generate the attestation
         uses: slsa-framework/slsa-github-generator/.github/actions/generate-attestations@v2.0.0
         with:
-          slsa-layout-file: artifacts-layout.json
+          slsa-layout-file: ./artifacts-layout.json
           predicate-type: https://slsa.dev/provenance/v0.2
-          predicate-file: predicate.json
-          output-folder: attestations
+          predicate-file: ./predicate.json
+          output-folder: ./attestations
       - name: Sign the attestation
         uses: slsa-framework/slsa-github-generator/.github/actions/sign-attestations@v2.0.0
         with:
           payload-type: application/vnd.in-toto+json
-          attestations: attestations-unsigned
-          output-folder: attestations-signed          
+          attestations: ./attestations
+          output-folder: ./attestations-signed          
 
       
 
