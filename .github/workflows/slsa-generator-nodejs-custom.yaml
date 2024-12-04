@@ -19,7 +19,12 @@ jobs:
       - name: Build steps
         run: |
           echo "Building the project"
-          npm pack
+          npm pack --json
+      - name: Upload npm pack
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        with:
+          path: pack.json
+          name: pack.json
       - name: Auto-Detect - Package details
         id: package-details
         run: |
@@ -27,7 +32,7 @@ jobs:
           PACKAGE_FILENAME=$(basename $PACKAGE_PATH)
           PACKAGE_NAME=$(jq -r '.name' package.json)
           PACKAGE_VERSION=$(jq -r '.version' package.json)
-          PACKAGE_INTEGRITY=$(openssl dgst -sha512 -binary "$PACKAGE_PATH")
+          PACKAGE_INTEGRITY=$(openssl dgst -sha512 -binary "$PACKAGE_PATH" | base64)
           echo "PACKAGE_FILENAME=${PACKAGE_FILENAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
