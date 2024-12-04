@@ -97,6 +97,22 @@ jobs:
           cat predicate.json
           cat artifacts-layout.json
           cat ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
+      - name: Upload artifact1
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        with:
+          path: predicate.json
+      - name: Upload artifact2
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        with:
+          path: artifacts-layout.json
+      - name: Upload artifact3
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        with:
+          path: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
+      - name: Upload artifact4
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        with:
+          path: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
       - name: Upload to npmjs.com
         env:
           TARBALL_PATH: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
