@@ -88,8 +88,12 @@ jobs:
       - name: Scan to find the attestation signed from the signed folder
         id: scan-attestations-signed
         run: |
-          ATTESTATION_SIGNED_PATH=$(ls -1 ./attestations-signed *.build.slsa | head -n 1)
-          echo "ATTESTATION_SIGNED_PATH=${ATTESTATION_PATH}" >> $GITHUB_OUTPUT
+          ATTESTATION_SIGNED_PATH=$(ls -1 ./attestations-signed/*.build.slsa | head -n 1)
+          if [ -z "$ATTESTATION_SIGNED_PATH" ]; then
+            echo "Error: No attestation signed files found in the ./attestations-signed directory."
+            exit 1
+          fi
+          echo "ATTESTATION_SIGNED_PATH=${ATTESTATION_SIGNED_PATH}" >> $GITHUB_OUTPUT
       - name: Upload to npmjs.com
         env:
           TARBALL_PATH: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
