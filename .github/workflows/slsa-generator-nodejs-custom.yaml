@@ -85,7 +85,7 @@ jobs:
           slsa-layout-file: artifacts-layout.json
           predicate-type: https://slsa.dev/provenance/v0.2
           predicate-file: predicate.json
-          output-folder: attestations
+          output-folder: toto
       - name: Sign the attestation
         uses: slsa-framework/slsa-github-generator/.github/actions/sign-attestations@v2.0.0
         with:
