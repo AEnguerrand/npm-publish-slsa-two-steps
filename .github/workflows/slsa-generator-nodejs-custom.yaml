@@ -111,7 +111,7 @@ jobs:
         uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
         with:
           path: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
-          name: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
+          name: signed-attestations.json
       - name: Upload artifact4
         uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
         with:
