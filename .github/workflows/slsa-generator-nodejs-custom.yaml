@@ -38,7 +38,7 @@ jobs:
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
           echo "PACKAGE_INTEGRITY=sha512-${PACKAGE_INTEGRITY}" >> $GITHUB_OUTPUT
           package_integrity=$(echo "${pack_json}" | jq -r '.[0].integrity')
-          echo package_integrity
+          echo $package_integrity
       - name: Print all outputs of packges details
         run: |
           echo "PACKAGE_FILENAME=${{ steps.package-details.outputs.PACKAGE_FILENAME }}"
