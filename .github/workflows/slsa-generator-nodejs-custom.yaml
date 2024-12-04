@@ -40,10 +40,23 @@ jobs:
           echo "PACKAGE_INTEGRITY=${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}"
       - name: Generate the Predicate
         env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_ACTOR_ID: ${{ env.GITHUB_ACTOR_ID }}
+          GITHUB_REPOSITORY_ID: ${{ env.GITHUB_REPOSITORY_ID }}
+          GITHUB_REPOSITORY_OWNER_ID: ${{ env.GITHUB_REPOSITORY_OWNER_ID }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_REF_TYPE: ${{ github.ref_type }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+          GITHUB_WORKFLOW_REF: ${{ github.repository }}/$GITHUB_WORKFLOW@$GITHUB_REF
+          BUILD_INVOCATION_ID: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
-          echo $GITHUB_CONTEXT
-          #bash ./.github/workflows/slsa-github-generator-nodejs-predicate.sh
+          bash ./.github/workflows/slsa-github-generator-nodejs-predicate.sh
+          cat predicate.json
       - name: Generate the SLSA layout
         env:
           SLSA_OUTPUTS_ARTIFACTS_FILE: artifacts-layout.json
