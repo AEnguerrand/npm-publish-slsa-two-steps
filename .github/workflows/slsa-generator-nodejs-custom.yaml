@@ -40,9 +40,9 @@ jobs:
           echo "PACKAGE_INTEGRITY=${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}"
       - name: Generate the Predicate
         env:
-          GITHUB_ACTOR_ID: ${{ env.GITHUB_ACTOR_ID }}
-          GITHUB_REPOSITORY_ID: ${{ env.GITHUB_REPOSITORY_ID }}
-          GITHUB_REPOSITORY_OWNER_ID: ${{ env.GITHUB_REPOSITORY_OWNER_ID }}
+          GITHUB_ACTOR_ID: ${{ github.actor_id }}
+          GITHUB_REPOSITORY_ID: ${{ github.repository_id }}
+          GITHUB_REPOSITORY_OWNER_ID: ${{ github.repository_owner_id}}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
@@ -52,7 +52,7 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           GITHUB_WORKFLOW: ${{ github.workflow }}
           GITHUB_BASE_REF: ${{ github.base_ref }}
-          GITHUB_WORKFLOW_REF: ${{ github.repository }}/$GITHUB_WORKFLOW@$GITHUB_REF
+          GITHUB_WORKFLOW_REF: ${{ github.workflow_ref }}
           BUILD_INVOCATION_ID: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           bash ./.github/workflows/slsa-github-generator-nodejs-predicate.sh
