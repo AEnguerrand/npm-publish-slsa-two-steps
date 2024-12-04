@@ -24,17 +24,17 @@ jobs:
         id: package-details
         run: |
           PACKAGE_PATH=$(ls -1 *.tgz | head -n 1) # To be change with the action as input
-          PACKAGE_TGZ=$(basename $PACKAGE_PATH)
+          PACKAGE_FILENAME=$(basename $PACKAGE_PATH)
           PACKAGE_NAME=$(jq -r '.name' package.json)
           PACKAGE_VERSION=$(jq -r '.version' package.json)
           PACKAGE_INTEGRITY=$(shasum -a 512 $PACKAGE_PATH | awk '{print $1}')
-          echo "PACKAGE_TGZ=${PACKAGE_TGZ}" >> $GITHUB_OUTPUT
+          echo "PACKAGE_FILENAME=${PACKAGE_FILENAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
           echo "PACKAGE_INTEGRITY=sha512-${PACKAGE_INTEGRITY}" >> $GITHUB_OUTPUT
       - name: Print all outputs of packges details
         run: |
-          echo "PACKAGE_TGZ=${{ steps.package-details.outputs.PACKAGE_TGZ }}"
+          echo "PACKAGE_FILENAME=${{ steps.package-details.outputs.PACKAGE_FILENAME }}"
           echo "PACKAGE_NAME=${{ steps.package-details.outputs.PACKAGE_NAME }}"
           echo "PACKAGE_VERSION=${{ steps.package-details.outputs.PACKAGE_VERSION }}"
           echo "PACKAGE_INTEGRITY=${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}"
