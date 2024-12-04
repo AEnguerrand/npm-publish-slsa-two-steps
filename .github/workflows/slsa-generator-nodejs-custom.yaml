@@ -84,11 +84,16 @@ jobs:
           payload-type: application/vnd.in-toto+json
           attestations: attestations
           output-folder: attestations-signed 
-      - run: ls -Rla
+      - run: ls -Rl
+      - name: Scan to find the attestation signed from the signed folder
+        id: scan-attestations-signed
+        run: |
+          ATTESTATION_SIGNED_PATH=$(ls -1 ./attestations *.build.slsa | head -n 1)
+          echo "ATTESTATION_SIGNED_PATH=${ATTESTATION_PATH}" >> $GITHUB_OUTPUT
       - name: Upload to npmjs.com
         env:
           TARBALL_PATH: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
-          PROVENANCE_PATH: "./attestations-signed/${{ steps.package-details.outputs.PACKAGE_NAME }}-${{ steps.package-details.outputs.PACKAGE_VERSION }}.build.slsa"
+          PROVENANCE_PATH: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
         run: |
           npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
           npm publish "${TARBALL_PATH}" --access public --provenance-file="${PROVENANCE_PATH}"         
