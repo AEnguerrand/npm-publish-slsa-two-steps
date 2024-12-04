@@ -88,7 +88,7 @@ jobs:
       - name: Upload to npmjs.com
         env:
           TARBALL_PATH: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
-          PROVENANCE_PATH: "./attestations/${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.provenance-name }}"
+          PROVENANCE_PATH: "./attestations-signed/${{ steps.package-details.outputs.PACKAGE_NAME }}-${{ steps.package-details.outputs.PACKAGE_VERSION }}.build.slsa"
         run: |
           npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
           npm publish "${TARBALL_PATH}" --access public --provenance-file="${PROVENANCE_PATH}"         
