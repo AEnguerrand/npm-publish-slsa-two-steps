@@ -77,13 +77,21 @@ jobs:
           slsa-layout-file: artifacts-layout.json
           predicate-type: https://slsa.dev/provenance/v0.2
           predicate-file: predicate.json
-          output-folder: toto
+          output-folder: attestations
       - name: Sign the attestation
         uses: slsa-framework/slsa-github-generator/.github/actions/sign-attestations@v2.0.0
         with:
           payload-type: application/vnd.in-toto+json
           attestations: attestations
-          output-folder: attestations-signed          
+          output-folder: attestations-signed 
+      - run: ls -Rla
+      - name: Upload to npmjs.com
+        env:
+          TARBALL_PATH: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
+          PROVENANCE_PATH: "./attestations/${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.provenance-name }}"
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
+          npm publish "${TARBALL_PATH}" --access public --provenance-file="${PROVENANCE_PATH}"         
 
       
 
