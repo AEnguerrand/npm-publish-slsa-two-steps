@@ -76,13 +76,14 @@ jobs:
           pwd
           mkdir testattest
           mkdir attestations
+          ls -lar
       - name: Generate the attestation
         uses: slsa-framework/slsa-github-generator/.github/actions/generate-attestations@v2.0.0
         with:
           slsa-layout-file: ./artifacts-layout.json
           predicate-type: https://slsa.dev/provenance/v0.2
           predicate-file: ./predicate.json
-          output-folder: ./#cybersecurity-tool-okta
+          output-folder: ./attestations
       - name: Sign the attestation
         uses: slsa-framework/slsa-github-generator/.github/actions/sign-attestations@v2.0.0
         with:
