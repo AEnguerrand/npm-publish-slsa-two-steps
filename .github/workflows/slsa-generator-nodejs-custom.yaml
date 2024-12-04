@@ -40,7 +40,12 @@ jobs:
           echo "PACKAGE_INTEGRITY=${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}"
       - name: Generate the Predicate
         env:
+          BUILDER_ID: ${{ github.workflow_ref }} # Buid is made on the same job
+          CONFIG_SOURCE_URI: git+${{ github.repository.html_url }}@${{ github.ref }}
+          CONFIG_SOURCE_DIGEST: ${{ github.sha }}
+          ENTRY_POINT: ${{ github.workflow }}
           GITHUB_ACTOR_ID: ${{ github.actor_id }}
+          GITHUB_TRIGGERING_ACTOR_ID: ${{ github.triggering_actor }}
           GITHUB_REPOSITORY_ID: ${{ github.repository_id }}
           GITHUB_REPOSITORY_OWNER_ID: ${{ github.repository_owner_id}}
           GITHUB_RUN_ID: ${{ github.run_id }}

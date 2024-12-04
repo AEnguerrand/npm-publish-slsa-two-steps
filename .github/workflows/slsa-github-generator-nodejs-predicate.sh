@@ -6,7 +6,7 @@ cat <<EOF > predicate.json
     "builder": {
         "id": "$BUILDER_ID"
     },
-    "buildType": "$BUILD_TYPE",
+    "buildType": "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1",
     "invocation": {
         "configSource": {
             "uri": "$CONFIG_SOURCE_URI",
