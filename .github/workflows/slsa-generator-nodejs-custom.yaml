@@ -19,7 +19,7 @@ jobs:
       - name: Build steps
         run: |
           echo "Building the project"
-          npm pack --json
+          npm pack --json > pack.json
       - name: Upload npm pack
         uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
         with:
