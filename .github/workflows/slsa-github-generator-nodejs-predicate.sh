@@ -35,7 +35,15 @@ cat <<EOF > predicate.json
     },
     "metadata": {
         "buildInvocationId": "$BUILD_INVOCATION_ID"
-    }
+    },
+    "materials": [
+      {
+            "uri": "$CONFIG_SOURCE_URI",
+            "digest": {
+                "sha1": "$CONFIG_SOURCE_DIGEST"
+            }
+        }
+    ]
 }
 EOF
 
