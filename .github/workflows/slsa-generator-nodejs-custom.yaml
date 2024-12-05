@@ -16,32 +16,22 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup node
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4
-      - name: Build steps
-        run: |
-          echo "Building the project"
-          npm pack --json > pack.json
-      - name: Upload npm pack
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
-        with:
-          path: pack.json
-          name: pack.json
       - name: Auto-Detect - Package details
         id: package-details
         run: |
           PACKAGE_PATH=$(ls -1 *.tgz | head -n 1) # To be change with the action as input
-          PACKAGE_FILENAME=$(basename $PACKAGE_PATH)
-          PACKAGE_NAME=$(jq -r '.name' package.json)
-          PACKAGE_VERSION=$(jq -r '.version' package.json)
-          PACKAGE_INTEGRITY=$(openssl dgst -sha512 -binary "$PACKAGE_PATH" | base64)
+
+          pack_json=$(npm pack $PACKAGE_PATH --json | tee pack.json | jq -c)
+          jq <pack.json
+          
+          PACKAGE_FILENAME=$(echo "$pack_json" | jq -r '.[0].filename')
+          PACKAGE_NAME=$(echo "$pack_json" | jq -r '.[0].name')
+          PACKAGE_VERSION=$(echo "$pack_json" | jq -r '.[0].version')
+          PACKAGE_INTEGRITY=$(echo "$pack_json" | jq -r '.[0].integrity')
           echo "PACKAGE_FILENAME=${PACKAGE_FILENAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
           echo "PACKAGE_INTEGRITY=sha512-${PACKAGE_INTEGRITY}" >> $GITHUB_OUTPUT
-
-          pack_json=$(npm pack --json | tee pack.json | jq -c)
-          jq <pack.json
-          package_integrity=$(echo "${pack_json}" | jq -r '.[0].integrity')
-          echo $package_integrity
       - name: Print all outputs of packges details
         run: |
           echo "PACKAGE_FILENAME=${{ steps.package-details.outputs.PACKAGE_FILENAME }}"
