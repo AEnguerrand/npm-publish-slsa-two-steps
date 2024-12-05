@@ -2,7 +2,7 @@ name: Github Attest
 
 on:
   workflow_dispatch:
-  push:
+  #push:
 
 permissions:
   contents: read
