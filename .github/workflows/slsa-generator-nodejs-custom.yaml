@@ -16,6 +16,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup node
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4
+      - name: Build steps
+        run: |
+          echo "Building the project"
+          npm pack 
       - name: Auto-Detect - Package details
         id: package-details
         run: |
