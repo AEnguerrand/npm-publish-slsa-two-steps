@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Compute some variables
+extract_entry_point() {
+  local workflow_ref="$1"
+  local entry_point="${workflow_ref#*/*/}"
+  entry_point="${entry_point%@*}"
+  echo "$entry_point"
+}
+
+ENTRY_POINT=$(extract_entry_point "$GITHUB_WORKFLOW_REF")
+
 # Generate JSON
 cat <<EOF > predicate.json
 {
@@ -13,7 +23,7 @@ cat <<EOF > predicate.json
             "digest": {
                 "sha1": "$CONFIG_SOURCE_DIGEST"
             },
-            "entryPoint": "$ENTRY_POINT"
+            "entryPoint": "$ENTRY_POINT
         },
         "environment": {
             "GITHUB_ACTOR_ID": "$GITHUB_ACTOR_ID",
