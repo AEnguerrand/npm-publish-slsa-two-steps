@@ -64,6 +64,7 @@ jobs:
           BUILD_INVOCATION_ID: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           bash ./.github/workflows/slsa-github-generator-nodejs-predicate.sh
+          cat predicate.json
       - name: Generate the SLSA layout
         env:
           SLSA_OUTPUTS_ARTIFACTS_FILE: artifacts-layout.json
