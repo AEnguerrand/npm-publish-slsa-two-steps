@@ -23,7 +23,7 @@ cat <<EOF > predicate.json
             "digest": {
                 "sha1": "$CONFIG_SOURCE_DIGEST"
             },
-            "entryPoint": "$ENTRY_POINT
+            "entryPoint": "$ENTRY_POINT"
         },
         "environment": {
             "GITHUB_ACTOR_ID": "$GITHUB_ACTOR_ID",
