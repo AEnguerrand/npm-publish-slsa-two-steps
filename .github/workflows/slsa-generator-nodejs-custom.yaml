@@ -140,7 +140,7 @@ jobs:
             echo "Error: Failed to upload attestation to GitHub API. HTTP status code: $response"
             exit 1
           fi
-          - name: Upload to npmjs.com
+      - name: Upload to npmjs.com
         env:
           TARBALL_PATH: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
           PROVENANCE_PATH: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
