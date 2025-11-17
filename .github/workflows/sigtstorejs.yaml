@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4
       - name: Generate dummy package
@@ -28,17 +28,17 @@ jobs:
       - name: "Verify provenance statement (TODO: Verify source identity)"
         run: npx @sigstore/cli verify provenance.sigstore.json
       - name: Upload artifact (provenance statement)
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        uses: actions/upload-artifact@v4
         with:
           name: provenance-statement.json
           path: provenance-statement.json
       - name: Upload artifact (provenance)
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        uses: actions/upload-artifact@v4
         with:
           name: provenance-sigstore.json
           path: provenance.sigstore.json
       - name: Upload artifact (build)
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        uses: actions/upload-artifact@v4
         with:
           name: aenguerrand-examplepackage12-0.4.0.tgz
           path: aenguerrand-examplepackage12-0.4.0.tgz

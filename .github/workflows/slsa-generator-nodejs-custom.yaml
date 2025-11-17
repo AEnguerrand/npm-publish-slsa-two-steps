@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4
       - name: Build steps
@@ -104,22 +104,22 @@ jobs:
           cat artifacts-layout.json
           cat ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
       - name: Upload artifact1
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           path: predicate.json
           name: predicate.json
       - name: Upload artifact2
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           path: artifacts-layout.json
           name: artifacts-layout.json
       - name: Upload artifact3
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           path: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
           name: signed-attestations.json
       - name: Upload artifact4
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           path: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
           name: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
