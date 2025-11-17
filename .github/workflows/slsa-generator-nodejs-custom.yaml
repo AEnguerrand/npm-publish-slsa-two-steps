@@ -103,22 +103,22 @@ jobs:
           cat predicate.json
           cat artifacts-layout.json
           cat ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
-      - name: Upload artifact1
+      - name: Upload Predicate
         uses: actions/upload-artifact@v4
         with:
           path: predicate.json
           name: predicate.json
-      - name: Upload artifact2
+      - name: Upload Layout
         uses: actions/upload-artifact@v4
         with:
           path: artifacts-layout.json
           name: artifacts-layout.json
-      - name: Upload artifact3
+      - name: Upload Signed Attestation
         uses: actions/upload-artifact@v4
         with:
           path: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
           name: signed-attestations.json
-      - name: Upload artifact4
+      - name: Upload Package
         uses: actions/upload-artifact@v4
         with:
           path: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
