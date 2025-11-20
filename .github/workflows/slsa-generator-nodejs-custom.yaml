@@ -158,38 +158,24 @@ jobs:
             console.log('Attestation uploaded successfully:', response.data);
             core.setOutput('attestation_id', response.data.id);
       - name: Download Attestation from Github API
-        uses: actions/github-script@v6
         env:
-          PACKAGE_SHA256: ${{ steps.package-details.outputs.PACKAGE_SHA256 }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        with:
-          script: |
-            const fs = require('fs');
-            const packageSha256 = process.env.PACKAGE_SHA256;
-            const [owner, repoName] = process.env.GITHUB_REPOSITORY.split('/');
-
-            console.log(`Downloading attestation for subject digest: sha256:${packageSha256}`);
-
-            const response = await github.request('GET /repos/{owner}/{repo}/attestations', {
-              owner: owner,
-              repo: repoName,
-              subject_digest: `sha256:${packageSha256}`,
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
-              }
-            });
-
-            console.log('Attestations response:', JSON.stringify(response.data, null, 2));
-
-            if (response.data.attestations && response.data.attestations.length > 0) {
-              // Get the most recent attestation (assuming the API returns them in some order, or we take the first)
-              // The attestation object contains the bundle.
-              const attestationBundle = response.data.attestations[0].bundle;
-              fs.writeFileSync('downloaded-attestation.json', JSON.stringify(attestationBundle));
-              console.log('Attestation downloaded to downloaded-attestation.json');
-            } else {
-              throw new Error(`No attestation found for subject digest sha256:${packageSha256}`);
-            }
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGE_FILENAME: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
+        run: |
+          echo "Downloading attestation for $PACKAGE_FILENAME"
+          gh attestation download "$PACKAGE_FILENAME" --repo "${{ github.repository }}"
+          
+          # Find the downloaded file (usually named with sha256 digest)
+          DOWNLOADED_FILE=$(ls *sha256*.json* | head -n 1)
+          echo "Downloaded file: $DOWNLOADED_FILE"
+          
+          if [ -z "$DOWNLOADED_FILE" ]; then
+            echo "Error: No attestation file downloaded."
+            exit 1
+          fi
+          
+          mv "$DOWNLOADED_FILE" downloaded-attestation.json
+          echo "Attestation saved to downloaded-attestation.json"
       - name: Upload to npmjs.com
         env:
           TARBALL_PATH: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
