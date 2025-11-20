@@ -33,16 +33,19 @@ jobs:
           PACKAGE_NAME=$(echo "$pack_json" | jq -r '.[0].name')
           PACKAGE_VERSION=$(echo "$pack_json" | jq -r '.[0].version')
           PACKAGE_INTEGRITY=$(echo "$pack_json" | jq -r '.[0].integrity')
+          PACKAGE_SHA256=$(shasum -a 256 $PACKAGE_FILENAME | awk '{print $1}')
           echo "PACKAGE_FILENAME=${PACKAGE_FILENAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
           echo "PACKAGE_INTEGRITY=${PACKAGE_INTEGRITY}" >> $GITHUB_OUTPUT
+          echo "PACKAGE_SHA256=${PACKAGE_SHA256}" >> $GITHUB_OUTPUT
       - name: Print all outputs of packges details
         run: |
           echo "PACKAGE_FILENAME=${{ steps.package-details.outputs.PACKAGE_FILENAME }}"
           echo "PACKAGE_NAME=${{ steps.package-details.outputs.PACKAGE_NAME }}"
           echo "PACKAGE_VERSION=${{ steps.package-details.outputs.PACKAGE_VERSION }}"
           echo "PACKAGE_INTEGRITY=${{ steps.package-details.outputs.PACKAGE_INTEGRITY }}"
+          echo "PACKAGE_SHA256=${{ steps.package-details.outputs.PACKAGE_SHA256 }}"
       - name: Generate the Predicate
         env:
           BUILDER_ID: ${{ github.workflow_ref }} # Buid is made on the same job
@@ -124,6 +127,7 @@ jobs:
           path: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
           name: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
       - name: Upload Attestation to the Github API
+        id: upload-attestation
         uses: actions/github-script@v6
         env:
           ATTESTATION_PATH: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
@@ -152,10 +156,44 @@ jobs:
             }
 
             console.log('Attestation uploaded successfully:', response.data);
+            core.setOutput('attestation_id', response.data.id);
+      - name: Download Attestation from Github API
+        uses: actions/github-script@v6
+        env:
+          PACKAGE_SHA256: ${{ steps.package-details.outputs.PACKAGE_SHA256 }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        with:
+          script: |
+            const fs = require('fs');
+            const packageSha256 = process.env.PACKAGE_SHA256;
+            const [owner, repoName] = process.env.GITHUB_REPOSITORY.split('/');
+
+            console.log(`Downloading attestation for subject digest: sha256:${packageSha256}`);
+
+            const response = await github.request('GET /repos/{owner}/{repo}/attestations', {
+              owner: owner,
+              repo: repoName,
+              subject_digest: `sha256:${packageSha256}`,
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            });
+
+            console.log('Attestations response:', JSON.stringify(response.data, null, 2));
+
+            if (response.data.attestations && response.data.attestations.length > 0) {
+              // Get the most recent attestation (assuming the API returns them in some order, or we take the first)
+              // The attestation object contains the bundle.
+              const attestationBundle = response.data.attestations[0].bundle;
+              fs.writeFileSync('downloaded-attestation.json', JSON.stringify(attestationBundle));
+              console.log('Attestation downloaded to downloaded-attestation.json');
+            } else {
+              throw new Error(`No attestation found for subject digest sha256:${packageSha256}`);
+            }
       - name: Upload to npmjs.com
         env:
           TARBALL_PATH: ${{ steps.package-details.outputs.PACKAGE_FILENAME }}
-          PROVENANCE_PATH: ${{ steps.scan-attestations-signed.outputs.ATTESTATION_SIGNED_PATH }}
+          PROVENANCE_PATH: downloaded-attestation.json
         run: |
           npm config set //registry.npmjs.org/:_authToken "${{ secrets.NPM_TOKEN }}"
           npm publish "${TARBALL_PATH}" --access public --provenance-file="${PROVENANCE_PATH}"
